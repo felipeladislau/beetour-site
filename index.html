@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeeTour — Tours guiados sem código para o seu SaaS</title>
+  <meta name="description" content="Crie tours guiados profissionais em 15 minutos, sem código. Aumente ativação, reduza churn e libere seu time de devs. Plano grátis para sempre." />
+  <meta name="theme-color" content="#FFA41B" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="BeeTour — Tours guiados sem código para o seu SaaS" />
+  <meta property="og:description" content="Crie tours guiados profissionais em 15 minutos, sem código. Plano grátis disponível." />
+  <meta property="og:type" content="website" />
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BeeTour",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": [
+      {"@type":"Offer","name":"Free","price":"0","priceCurrency":"BRL"},
+      {"@type":"Offer","name":"Start","price":"89.90","priceCurrency":"BRL"},
+      {"@type":"Offer","name":"Full","price":"149.90","priceCurrency":"BRL"}
+    ],
+    "description": "Plataforma no-code de tours guiados para SaaS. Crie onboarding interativo em 15 minutos."
+  }
+  </script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top bt-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img src="assets/logo.svg" alt="BeeTour" class="bt-logo" />
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-label="Abrir menu">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav mx-auto gap-lg-4">
+          <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
+          <li class="nav-item"><a class="nav-link" href="#resultados">Resultados</a></li>
+          <li class="nav-item"><a class="nav-link" href="#planos">Planos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+        </ul>
+        <a href="#planos" class="btn btn-bee btn-bee-primary">Começar Grátis</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="bt-hero">
+    <div class="bt-hero-bg" aria-hidden="true"></div>
+    <div class="container position-relative">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="bt-pill bt-pill-soft mb-4">
+            <i class="bi bi-stars"></i> 100% No-Code · Pronto em 15 minutos
+          </span>
+          <h1 class="bt-h1 mb-4">
+            Tour guiado para seu SaaS <span class="bt-accent">sem código</span>
+          </h1>
+          <p class="bt-lead mb-4">
+            Crie tours guiados profissionais em minutos. Sem depender do seu time de desenvolvimento.
+            Suporte, comercial e testes trabalham de forma autônoma.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <span class="bt-chip"><i class="bi bi-clock"></i> 15 min para configurar</span>
+            <span class="bt-chip"><i class="bi bi-code-slash"></i> 1 linha de código</span>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3">
+            <a href="#planos" class="btn btn-bee btn-bee-primary btn-lg">
+              Começar Grátis <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+            <a href="#demo" class="btn btn-bee btn-bee-outline btn-lg">
+              <i class="bi bi-play-circle"></i> Ver Demo
+            </a>
+          </div>
+
+          <p class="bt-fineprint mt-3 mb-0">
+            ✓ Plano grátis para sempre &nbsp;·&nbsp; ✓ Sem cartão de crédito &nbsp;·&nbsp; ✓ Cancele quando quiser
+          </p>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="bt-hero-card">
+            <div class="bt-floating bt-floating-tl">
+              <i class="bi bi-check-circle-fill text-success"></i> Tour publicado!
+            </div>
+            <div class="bt-floating bt-floating-br">
+              <span class="bt-floating-icon"><i class="bi bi-bullseye"></i></span>
+              <div>
+                <strong>+25%</strong>
+                <small class="d-block">Ativação</small>
+              </div>
+            </div>
+
+            <!-- Placeholder do screenshot -->
+            <div class="bt-screenshot-placeholder" data-screenshot="editor-visual">
+              <div class="bt-play"><i class="bi bi-play-fill"></i></div>
+              <div class="bt-screenshot-label">Screenshot do Editor Visual</div>
+              <div class="bt-screenshot-sublabel">Tour sendo criado visualmente</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PROBLEMA -->
+  <section class="bt-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-danger mb-3">
+          <i class="bi bi-exclamation-triangle"></i> O Problema
+        </span>
+        <h2 class="bt-h2">Seu SaaS está perdendo usuários</h2>
+        <p class="bt-lead mx-auto" style="max-width: 720px;">
+          Experiências ruins de onboarding levam à perda de clientes e aumento do churn.
+          E seu time de devs está ocupado demais para resolver isso.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="bt-stat-card bt-stat-danger">
+            <div class="bt-stat-icon"><i class="bi bi-graph-down-arrow"></i></div>
+            <div class="bt-stat-num">40-60%</div>
+            <p>dos usuários abandonam o produto após o cadastro</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-stat-card bt-stat-warning">
+            <div class="bt-stat-icon"><i class="bi bi-people"></i></div>
+            <div class="bt-stat-num">Time Dev</div>
+            <p>sobrecarregado com backlog extenso</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-stat-card bt-stat-soft">
+            <div class="bt-stat-icon"><i class="bi bi-clock-history"></i></div>
+            <div class="bt-stat-num">Semanas</div>
+            <p>para implementar um simples tutorial</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUÇÃO -->
+  <section class="bt-section bt-solution-wrap">
+    <div class="container">
+      <div class="bt-solution-card">
+        <div class="text-center">
+          <span class="bt-pill bt-pill-light mb-3">
+            🐝 A Solução
+          </span>
+          <h2 class="bt-h2 text-white">Com o BeeTour, qualquer pessoa do seu time cria tours guiados</h2>
+          <p class="bt-lead text-white-70 mx-auto" style="max-width: 760px;">
+            Suporte, comercial, produto ou testes. Em 15 minutos, seu guia está pronto e funcionando.
+            Basta copiar e colar uma linha de código.
+          </p>
+        </div>
+
+        <div class="row g-3 mt-4">
+          <div class="col-md-4">
+            <div class="bt-mini-card">
+              <i class="bi bi-mouse2"></i>
+              <strong>Editor visual</strong>
+              <span>Arraste e solte, sem código</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="bt-mini-card">
+              <i class="bi bi-lightning-charge"></i>
+              <strong>15 minutos</strong>
+              <span>Do zero ao tour publicado</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="bt-mini-card">
+              <i class="bi bi-code-square"></i>
+              <strong>1 linha de código</strong>
+              <span>Cole no &lt;head&gt; e pronto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUNCIONALIDADES -->
+  <section class="bt-section" id="funcionalidades">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-soft mb-3"><i class="bi bi-lightning-charge-fill"></i> Funcionalidades</span>
+        <h2 class="bt-h2">Tudo que você precisa para guiar seus usuários</h2>
+        <p class="bt-lead mx-auto" style="max-width: 720px;">
+          Do editor visual às análises avançadas, o BeeTour oferece um kit completo
+          para criar experiências de onboarding incríveis.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <!-- 1 Métricas -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="metricas">
+              <i class="bi bi-bar-chart-line"></i>
+              <span class="bt-screenshot-label">Dashboard de Métricas</span>
+              <span class="bt-screenshot-sublabel">Gráficos de engajamento e retenção</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+              <h3>Métricas e Análises</h3>
+              <p>Acompanhe retenção, engajamento e onde os usuários abandonam o tour. Dados para otimizar continuamente.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- 2 Editor visual -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="editor">
+              <i class="bi bi-cursor"></i>
+              <span class="bt-screenshot-label">Editor Visual</span>
+              <span class="bt-screenshot-sublabel">Interface drag-and-drop</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-magic"></i></div>
+              <h3>Editor Visual No-Code</h3>
+              <p>Crie tours arrastando e soltando. Sem precisar saber programar. Qualquer pessoa do time pode usar.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- 3 Múltiplos sites -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="projetos">
+              <i class="bi bi-stack"></i>
+              <span class="bt-screenshot-label">Gerenciador de Projetos</span>
+              <span class="bt-screenshot-sublabel">Lista de sites e tours</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+              <h3>Múltiplos Sites e Tours</h3>
+              <p>Gerencie vários produtos e tours em um só lugar. Organize por projeto, cliente ou equipe.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- 4 Conectar páginas -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="conectar">
+              <i class="bi bi-diagram-3"></i>
+              <span class="bt-screenshot-label">Tours Conectados</span>
+              <span class="bt-screenshot-sublabel">Navegue entre páginas</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-link-45deg"></i></div>
+              <h3>Tours Multi-Página</h3>
+              <p>Conecte tours e leve o usuário entre páginas diversas do seu produto, sem perder o contexto.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- 5 Mídia rica -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="midia">
+              <i class="bi bi-camera-video"></i>
+              <span class="bt-screenshot-label">Mídia Rica</span>
+              <span class="bt-screenshot-sublabel">Vídeos e imagens nos passos</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-images"></i></div>
+              <h3>Tours Ricos com Mídia</h3>
+              <p>Adicione vídeos, imagens e GIFs aos passos do tour. Ensine fazendo, com clareza visual total.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- 6 Cliques em elementos -->
+        <div class="col-md-6 col-lg-4">
+          <article class="bt-feature-card">
+            <div class="bt-feature-screenshot" data-screenshot="acoes">
+              <i class="bi bi-hand-index-thumb"></i>
+              <span class="bt-screenshot-label">Ações Interativas</span>
+              <span class="bt-screenshot-sublabel">Cliques em botões e elementos</span>
+            </div>
+            <div class="bt-feature-body">
+              <div class="bt-feature-icon"><i class="bi bi-hand-index"></i></div>
+              <h3>Ações em Elementos</h3>
+              <p>Configure cliques em botões e elementos da página. O usuário aprende interagindo de verdade.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section class="bt-section bt-section-dark" id="resultados">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-success mb-3">
+          <i class="bi bi-graph-up"></i> Resultados Comprovados
+        </span>
+        <h2 class="bt-h2 text-white">Números que falam por si</h2>
+        <p class="bt-lead text-white-70 mx-auto" style="max-width: 720px;">
+          Tours guiados transformam métricas de negócio. Veja o impacto real em
+          empresas que implementaram soluções de onboarding interativo.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-6 col-lg-3">
+          <div class="bt-result-card">
+            <div class="bt-result-icon bg-success-soft"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="bt-result-num bt-text-yellow">+550%</div>
+            <strong>Conversão Trial-to-Paid</strong>
+            <p>Aumento médio na conversão de usuários teste para pagantes</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="bt-result-card">
+            <div class="bt-result-icon bg-warning-soft"><i class="bi bi-people-fill"></i></div>
+            <div class="bt-result-num bt-text-yellow">+25%</div>
+            <strong>Taxa de Ativação</strong>
+            <p>Mais usuários completam o onboarding e usam o produto</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="bt-result-card">
+            <div class="bt-result-icon bg-info-soft"><i class="bi bi-headset"></i></div>
+            <div class="bt-result-num bt-text-yellow">−80%</div>
+            <strong>Chamadas de Demo</strong>
+            <p>Redução drástica no volume de demonstrações necessárias</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="bt-result-card">
+            <div class="bt-result-icon bg-purple-soft"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div class="bt-result-num bt-text-yellow">−95%</div>
+            <strong>Tempo de Criação</strong>
+            <p>Reduza semanas de desenvolvimento para minutos</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-4">
+        <div class="col-md-4">
+          <div class="bt-side-stat">
+            <span class="bt-side-num">−60%</span>
+            <span>Tempo de resolução de suporte</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-side-stat">
+            <span class="bt-side-num">+40%</span>
+            <span>Oportunidades de Upsell</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-side-stat">
+            <span class="bt-side-num">15 min</span>
+            <span>Para criar e publicar um tour</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="#planos" class="btn btn-bee btn-bee-primary btn-lg">
+          Quero esses resultados <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="bt-section" id="demo">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-soft mb-3"><i class="bi bi-list-ol"></i> Como funciona</span>
+        <h2 class="bt-h2">Em 3 passos seu tour está no ar</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="bt-step-card">
+            <div class="bt-step-num">1</div>
+            <h4>Crie no editor visual</h4>
+            <p>Arraste, solte e configure cada passo do tour direto na sua tela. Sem código.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-step-card">
+            <div class="bt-step-num">2</div>
+            <h4>Cole 1 linha no seu site</h4>
+            <p>Adicione o snippet do BeeTour no &lt;head&gt; e seu produto está conectado.</p>
+            <pre class="bt-snippet"><code>&lt;script src="https://cdn.beetour.io/loader.js" data-site="seu-id"&gt;&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bt-step-card">
+            <div class="bt-step-num">3</div>
+            <h4>Publique e meça</h4>
+            <p>Acompanhe métricas de retenção e engajamento e otimize continuamente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANOS -->
+  <section class="bt-section bt-pricing-wrap" id="planos">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-soft mb-3"><i class="bi bi-tag"></i> Planos</span>
+        <h2 class="bt-h2">Comece grátis. Cresça quando quiser.</h2>
+        <p class="bt-lead mx-auto" style="max-width: 640px;">
+          Todos os planos incluem acesso completo aos recursos. Sem cartão de crédito.
+        </p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <!-- FREE -->
+        <div class="col-md-6 col-lg-4">
+          <div class="bt-plan">
+            <div class="bt-plan-head">
+              <h3>Free</h3>
+              <p>Ideal para começar e testar tudo</p>
+            </div>
+            <div class="bt-plan-price">
+              <span class="bt-plan-currency">R$</span>
+              <span class="bt-plan-value">0</span>
+              <span class="bt-plan-period">/mês</span>
+            </div>
+            <ul class="bt-plan-features">
+              <li><i class="bi bi-check2"></i> 1 site</li>
+              <li><i class="bi bi-check2"></i> 2 tours</li>
+              <li><i class="bi bi-check2"></i> Até 5 passos por tour</li>
+              <li><i class="bi bi-check2"></i> Editor visual completo</li>
+              <li><i class="bi bi-check2"></i> Métricas e analytics</li>
+              <li><i class="bi bi-check2"></i> Mídia rica (vídeos e imagens)</li>
+            </ul>
+            <a href="#" class="btn btn-bee btn-bee-outline w-100">Começar Grátis</a>
+          </div>
+        </div>
+
+        <!-- START -->
+        <div class="col-md-6 col-lg-4">
+          <div class="bt-plan bt-plan-featured">
+            <span class="bt-plan-badge">Mais popular</span>
+            <div class="bt-plan-head">
+              <h3>Start</h3>
+              <p>Para times que estão escalando</p>
+            </div>
+            <div class="bt-plan-price">
+              <span class="bt-plan-currency">R$</span>
+              <span class="bt-plan-value">89,90</span>
+              <span class="bt-plan-period">/mês</span>
+            </div>
+            <ul class="bt-plan-features">
+              <li><i class="bi bi-check2"></i> 2 sites</li>
+              <li><i class="bi bi-check2"></i> 5 tours</li>
+              <li><i class="bi bi-check2"></i> Até 15 passos por tour</li>
+              <li><i class="bi bi-check2"></i> Tudo do Free</li>
+              <li><i class="bi bi-check2"></i> Tours multi-página</li>
+              <li><i class="bi bi-check2"></i> Suporte prioritário</li>
+            </ul>
+            <a href="#" class="btn btn-bee btn-bee-primary w-100">Assinar Start</a>
+          </div>
+        </div>
+
+        <!-- FULL -->
+        <div class="col-md-6 col-lg-4">
+          <div class="bt-plan">
+            <div class="bt-plan-head">
+              <h3>Full</h3>
+              <p>Para operações sem limites</p>
+            </div>
+            <div class="bt-plan-price">
+              <span class="bt-plan-currency">R$</span>
+              <span class="bt-plan-value">149,90</span>
+              <span class="bt-plan-period">/mês</span>
+            </div>
+            <ul class="bt-plan-features">
+              <li><i class="bi bi-check2"></i> 5 sites</li>
+              <li><i class="bi bi-check2"></i> Tours <strong>ilimitados</strong></li>
+              <li><i class="bi bi-check2"></i> Passos <strong>ilimitados</strong></li>
+              <li><i class="bi bi-check2"></i> Tudo do Start</li>
+              <li><i class="bi bi-check2"></i> Múltiplos usuários no time</li>
+              <li><i class="bi bi-check2"></i> Suporte dedicado</li>
+            </ul>
+            <a href="#" class="btn btn-bee btn-bee-dark w-100">Assinar Full</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bt-section" id="faq">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="bt-pill bt-pill-soft mb-3"><i class="bi bi-question-circle"></i> FAQ</span>
+        <h2 class="bt-h2">Perguntas frequentes</h2>
+      </div>
+
+      <div class="accordion bt-accordion mx-auto" id="faqAcc" style="max-width: 820px;">
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">Preciso saber programar para usar o BeeTour?</button></h3>
+          <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAcc"><div class="accordion-body">Não. O editor é 100% visual. Qualquer pessoa do seu time — suporte, comercial, produto ou QA — consegue criar e publicar tours sem ajuda do time de devs.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">Como instalo no meu sistema?</button></h3>
+          <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Você cola uma linha de script no &lt;head&gt; do seu produto. Pronto — todos os tours que você publicar aparecem automaticamente.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">O plano grátis tem todos os recursos?</button></h3>
+          <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Sim. Você tem acesso ao editor completo, métricas e mídia rica. A diferença está nos limites: 1 site e 2 tours de até 5 passos.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q4">Posso conectar tours entre páginas diferentes?</button></h3>
+          <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Sim. Tours podem navegar entre páginas, manter contexto e continuar do passo certo. Ideal para fluxos completos de onboarding.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q5">Posso cancelar quando quiser?</button></h3>
+          <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Sim. Sem fidelidade, sem multa. Cancele a qualquer momento direto no painel.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="bt-section">
+    <div class="container">
+      <div class="bt-cta-final">
+        <div>
+          <h2 class="bt-h2 mb-2">Pronto para guiar seus usuários ao sucesso?</h2>
+          <p class="mb-0">Comece grátis em 15 minutos. Sem cartão de crédito.</p>
+        </div>
+        <a href="#planos" class="btn btn-bee btn-bee-primary btn-lg">
+          Começar Grátis <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bt-footer">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-6">
+          <img src="assets/logo.svg" alt="BeeTour" class="bt-logo mb-2" />
+          <p class="mb-0 small">Tours guiados sem código para o seu SaaS.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <small>© <span id="bt-year"></span> BeeTour. Todos os direitos reservados.</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
