@@ -61,6 +61,469 @@
   </script>    
 </head>
 <body>
+
+  <script>
+    (function () {
+  var HELPER_VERSION = 7;
+  window.__tourforgeHelperRuntimeVersion = HELPER_VERSION;
+  var HELPER_CAPABILITIES = ['element-click', 'page-path', 'restart-button'];
+  var builderOrigin = null;
+  var mode = null;
+  var highlightEl = null;
+  var tooltipEl = null;
+  var currentColors = null;
+  var restartButtonEl = null;
+  var currentPreviewData = null;
+  var currentPreviewStep = 0;
+  var previewRestartConfig = { enabled: false, position: 'bottom-right' };
+  var elementClickHandler = null;
+  var elementClickTarget = null;
+  var previousElementCursor = '';
+
+  function getHandshakePayload(type) {
+    return {
+      source: 'tourforge-helper',
+      type: type,
+      version: HELPER_VERSION,
+      capabilities: HELPER_CAPABILITIES.slice(),
+      pagePath: window.location.pathname,
+    };
+  }
+
+  function getUniqueSelector(el) {
+    if (el.id) return '#' + CSS.escape(el.id);
+    if (el === document.body) return 'body';
+    if (el === document.documentElement) return 'html';
+    var parts = [];
+    while (el && el !== document.body && el !== document.documentElement) {
+      var selector = el.tagName.toLowerCase();
+      if (el.id) {
+        parts.unshift('#' + CSS.escape(el.id));
+        break;
+      }
+      if (el.className && typeof el.className === 'string') {
+        var classes = el.className.trim().split(/\s+/).filter(function (c) {
+          return c && !c.startsWith('tourforge-');
+        }).slice(0, 2);
+        if (classes.length) selector += '.' + classes.map(function (c) { return CSS.escape(c); }).join('.');
+      }
+      var parent = el.parentElement;
+      if (parent) {
+        var siblings = Array.from(parent.children).filter(function (c) { return c.tagName === el.tagName; });
+        if (siblings.length > 1) {
+          var idx = siblings.indexOf(el) + 1;
+          selector += ':nth-of-type(' + idx + ')';
+        }
+      }
+      parts.unshift(selector);
+      el = parent;
+    }
+    return parts.join(' > ');
+  }
+
+  function createHighlight() {
+    if (highlightEl) return highlightEl;
+    highlightEl = document.createElement('div');
+    highlightEl.className = 'tourforge-highlight';
+    highlightEl.style.cssText = 'position:fixed;pointer-events:none;border:2px solid #2bb5a0;background:rgba(43,181,160,0.08);border-radius:4px;z-index:999998;transition:all 0.1s ease;display:none;';
+    document.body.appendChild(highlightEl);
+    return highlightEl;
+  }
+
+  function positionHighlight(el) {
+    var hl = createHighlight();
+    var rect = el.getBoundingClientRect();
+    hl.style.display = 'block';
+    hl.style.top = (rect.top - 2) + 'px';
+    hl.style.left = (rect.left - 2) + 'px';
+    hl.style.width = (rect.width + 4) + 'px';
+    hl.style.height = (rect.height + 4) + 'px';
+  }
+
+  function hideHighlight() {
+    if (highlightEl) highlightEl.style.display = 'none';
+  }
+
+  function cleanupElementClick() {
+    if (elementClickHandler && elementClickTarget) {
+      elementClickTarget.removeEventListener('click', elementClickHandler, true);
+      elementClickTarget.style.cursor = previousElementCursor;
+    }
+    elementClickHandler = null;
+    elementClickTarget = null;
+    previousElementCursor = '';
+  }
+
+  function removeRestartButton() {
+    if (restartButtonEl) {
+      restartButtonEl.remove();
+      restartButtonEl = null;
+    }
+    var existing = document.getElementById('tourforge-restart-btn');
+    if (existing) existing.remove();
+  }
+
+  function showRestartButton() {
+    removeRestartButton();
+    if (!previewRestartConfig.enabled || !currentPreviewData || currentPreviewData.length === 0) return;
+
+    restartButtonEl = document.createElement('button');
+    restartButtonEl.id = 'tourforge-restart-btn';
+    var pos = previewRestartConfig.position || 'bottom-right';
+    var posStyle = '';
+    if (pos === 'bottom-right') posStyle = 'bottom:0;right:0;';
+    else if (pos === 'bottom-left') posStyle = 'bottom:0;left:0;';
+    else if (pos === 'top-right') posStyle = 'top:0;right:0;';
+    else posStyle = 'top:0;left:0;';
+
+    restartButtonEl.style.cssText = 'position:fixed;' + posStyle + 'z-index:2147483647;width:20px;height:20px;border-radius:3px;background:#2bb5a0;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0.7;transition:opacity 0.2s;padding:0;margin:0;';
+    restartButtonEl.innerHTML = 'â†»';
+    restartButtonEl.title = 'Reiniciar tour';
+    restartButtonEl.addEventListener('mouseenter', function () {
+      restartButtonEl.style.opacity = '1';
+    });
+    restartButtonEl.addEventListener('mouseleave', function () {
+      restartButtonEl.style.opacity = '0.7';
+    });
+    restartButtonEl.addEventListener('click', function () {
+      removeRestartButton();
+      sendMessage({ type: 'preview-restart' });
+    });
+    document.body.appendChild(restartButtonEl);
+  }
+
+  function removeOverlay() {
+    var existing = document.getElementById('tourforge-overlay');
+    if (existing) existing.remove();
+  }
+
+  function createOverlay(opacity, targetRect) {
+    removeOverlay();
+    if (!opacity || opacity <= 0) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'tourforge-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999997;pointer-events:none;';
+    var pad = 4;
+    var left = Math.max(0, targetRect.left - pad);
+    var top = Math.max(0, targetRect.top - pad);
+    var width = Math.max(0, targetRect.width + pad * 2);
+    var height = Math.max(0, targetRect.height + pad * 2);
+    var right = Math.min(window.innerWidth, left + width);
+    var bottom = Math.min(window.innerHeight, top + height);
+    var color = 'rgba(0,0,0,' + opacity + ')';
+    overlay.innerHTML = '' +
+      '<div style="position:absolute;top:0;left:0;width:100%;height:' + top + 'px;background:' + color + ';pointer-events:auto;"></div>' +
+      '<div style="position:absolute;top:' + bottom + 'px;left:0;width:100%;bottom:0;background:' + color + ';pointer-events:auto;"></div>' +
+      '<div style="position:absolute;top:' + top + 'px;left:0;width:' + left + 'px;height:' + (bottom - top) + 'px;background:' + color + ';pointer-events:auto;"></div>' +
+      '<div style="position:absolute;top:' + top + 'px;left:' + right + 'px;right:0;height:' + (bottom - top) + 'px;background:' + color + ';pointer-events:auto;"></div>';
+    document.body.appendChild(overlay);
+  }
+
+  function removeTooltip() {
+    if (tooltipEl) {
+      tooltipEl.remove();
+      tooltipEl = null;
+    }
+    cleanupElementClick();
+    hideHighlight();
+    removeOverlay();
+    if (highlightEl) {
+      highlightEl.style.pointerEvents = 'none';
+      highlightEl.style.cursor = '';
+    }
+  }
+
+  function showTooltip(step, index, total) {
+    removeTooltip();
+    removeRestartButton();
+
+    var blurEnabled = step.blurBackground || step.blur_background || false;
+    var blurOpacity = step.blurOpacity || step.blur_opacity || 0.5;
+
+    var el = document.querySelector(step.selector);
+    if (!el) {
+      sendMessage({ type: 'element-not-found', selector: step.selector });
+      return;
+    }
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(function () {
+      positionHighlight(el);
+      var rect = el.getBoundingClientRect();
+      if (blurEnabled) createOverlay(blurOpacity, rect);
+      tooltipEl = document.createElement('div');
+      tooltipEl.className = 'tourforge-tooltip';
+      var pc = (currentColors && currentColors.primaryColor) || '#2bb5a0';
+      var bg = (currentColors && currentColors.bgColor) || '#fff';
+      var tc = (currentColors && currentColors.textColor) || '#1a2332';
+      var btc = (currentColors && currentColors.buttonTextColor) || '#fff';
+      tooltipEl.style.cssText = 'position:fixed;z-index:999999;background:' + bg + ';border-radius:12px;padding:20px;max-width:320px;min-width:240px;box-shadow:0 20px 60px rgba(0,0,0,0.15),0 0 0 1px rgba(0,0,0,0.05);font-family:system-ui,-apple-system,sans-serif;animation:tourforge-fadeIn 0.25s ease;transition:max-width 0.3s ease;';
+
+      var pos = step.position || 'bottom';
+      if (pos === 'bottom') {
+        tooltipEl.style.top = (rect.bottom + 12) + 'px';
+        tooltipEl.style.left = Math.max(8, Math.min(window.innerWidth - 336, rect.left + rect.width / 2 - 160)) + 'px';
+      } else if (pos === 'top') {
+        tooltipEl.style.bottom = (window.innerHeight - rect.top + 12) + 'px';
+        tooltipEl.style.left = Math.max(8, Math.min(window.innerWidth - 336, rect.left + rect.width / 2 - 160)) + 'px';
+      } else if (pos === 'left') {
+        tooltipEl.style.top = (rect.top + rect.height / 2 - 50) + 'px';
+        tooltipEl.style.right = (window.innerWidth - rect.left + 12) + 'px';
+      } else {
+        tooltipEl.style.top = (rect.top + rect.height / 2 - 50) + 'px';
+        tooltipEl.style.left = (rect.right + 12) + 'px';
+      }
+
+      var isFirst = index === 0;
+      var isLast = index === total - 1;
+      var nextAction = step.nextAction || step.next_action || 'button';
+      var isElementClick = nextAction === 'element-click';
+      var showClose = step.showCloseButton !== false && step.show_close_button !== false;
+      var imageHtml = step.imageUrl ? '<img src="' + step.imageUrl + '" style="width:100%;max-height:160px;object-fit:cover;border-radius:6px;margin-bottom:10px;" alt="" />' : '';
+      var videoHtml = '';
+      if (step.videoUrl || step.video_url) {
+        var vUrl = step.videoUrl || step.video_url;
+        videoHtml = '<div style="position:relative;width:100%;margin-bottom:10px;border-radius:6px;overflow:hidden"><iframe src="' + vUrl + '?rel=0" style="width:100%;aspect-ratio:16/9;border:none;border-radius:6px" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe><button class="tourforge-btn-expand" style="position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="Ampliar">â›¶</button></div>';
+      }
+      var clickHint = isElementClick ? '<div style="font-size:12px;color:' + pc + ';margin-bottom:12px;display:flex;align-items:center;gap:4px;">ðŸ‘† Clique no elemento destacado para continuar</div>' : '';
+      var nextBtnHtml = isElementClick ? '' : '<button class="tourforge-btn-next" style="padding:7px 14px;border:none;border-radius:8px;background:' + pc + ';color:' + btc + ';cursor:pointer;font-size:13px;font-weight:600;">' + (isLast ? 'Concluir' : 'PrÃ³ximo') + '</button>';
+      var closeBtnHtml = showClose ? '<button class="tourforge-btn-close" style="position:absolute;top:6px;right:10px;background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;padding:2px;line-height:1;">&times;</button>' : '';
+
+      var pageInfo = step.pagePath ? '<div style="font-size:10px;color:#94a3b8;margin-bottom:4px;font-family:monospace;">' + step.pagePath + '</div>' : '';
+
+      tooltipEl.innerHTML = closeBtnHtml +
+        '<div style="margin-bottom:6px;font-size:11px;color:' + pc + ';font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">' + (index + 1) + ' de ' + total + '</div>' +
+        pageInfo +
+        '<div style="font-size:15px;font-weight:700;color:' + tc + ';margin-bottom:6px;line-height:1.3;">' + (step.title || 'Sem tÃ­tulo') + '</div>' +
+        imageHtml +
+        videoHtml +
+        (step.description ? '<div style="font-size:13px;color:' + tc + ';opacity:0.7;line-height:1.5;margin-bottom:12px;">' + step.description + '</div>' : '<div style="margin-bottom:12px;"></div>') +
+        clickHint +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+        (isFirst ? '' : '<button class="tourforge-btn-back" style="padding:7px 14px;border:1px solid #e2e8f0;border-radius:8px;background:' + bg + ';cursor:pointer;font-size:13px;color:' + tc + ';font-weight:500;">Voltar</button>') +
+        nextBtnHtml +
+        '</div>';
+
+      document.body.appendChild(tooltipEl);
+
+      var expandBtn = tooltipEl.querySelector('.tourforge-btn-expand');
+      if (expandBtn) {
+        expandBtn.addEventListener('click', function () {
+          var isExpanded = tooltipEl.style.maxWidth !== '320px';
+          if (isExpanded) {
+            tooltipEl.style.maxWidth = '320px';
+            expandBtn.innerHTML = 'â›¶';
+            expandBtn.title = 'Ampliar';
+          } else {
+            var expandedW = Math.min(2400, window.innerWidth - 32);
+            tooltipEl.style.maxWidth = expandedW + 'px';
+            tooltipEl.style.left = Math.max(8, (window.innerWidth - expandedW) / 2) + 'px';
+            tooltipEl.style.right = 'auto';
+            var ttRect = tooltipEl.getBoundingClientRect();
+            if (ttRect.bottom > window.innerHeight - 8) {
+              tooltipEl.style.top = Math.max(8, window.innerHeight - ttRect.height - 8) + 'px';
+              tooltipEl.style.bottom = 'auto';
+            }
+            expandBtn.innerHTML = 'âœ–';
+            expandBtn.title = 'Reduzir';
+          }
+        });
+      }
+
+      var backBtn = tooltipEl.querySelector('.tourforge-btn-back');
+      var nextBtn = tooltipEl.querySelector('.tourforge-btn-next');
+      var closeBtn = tooltipEl.querySelector('.tourforge-btn-close');
+      if (backBtn) backBtn.addEventListener('click', function () { sendMessage({ type: 'preview-prev' }); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { sendMessage({ type: 'preview-next' }); });
+      if (closeBtn) closeBtn.addEventListener('click', function () {
+        removeTooltip();
+        removeRestartButton();
+        showRestartButton();
+        sendMessage({ type: 'preview-close' });
+      });
+
+      if (isElementClick) {
+        previousElementCursor = el.style.cursor;
+        el.style.cursor = 'pointer';
+        elementClickTarget = el;
+        elementClickHandler = function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          sendMessage({ type: 'preview-next' });
+        };
+        elementClickTarget.addEventListener('click', elementClickHandler, true);
+      }
+    }, 300);
+  }
+
+  function addStyles() {
+    if (document.getElementById('tourforge-styles')) return;
+    var s = document.createElement('style');
+    s.id = 'tourforge-styles';
+    s.textContent = '@keyframes tourforge-fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}' +
+      '.tourforge-btn-back:hover{background:#f8fafc!important;border-color:#cbd5e1!important}' +
+      '.tourforge-btn-next:hover{filter:brightness(1.1)}';
+    document.head.appendChild(s);
+  }
+
+  function sendMessage(data) {
+    if (!builderOrigin) return;
+    window.parent.postMessage(Object.assign({ source: 'tourforge-helper' }, data), builderOrigin);
+  }
+
+  function onMouseMove(e) {
+    if (mode !== 'select') return;
+    var el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el && !el.classList.contains('tourforge-highlight') && el !== document.body && el !== document.documentElement) {
+      positionHighlight(el);
+    }
+  }
+
+  function onClick(e) {
+    if (mode !== 'select') return;
+    e.preventDefault();
+    e.stopPropagation();
+    var el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el && !el.classList.contains('tourforge-highlight')) {
+      var selector = getUniqueSelector(el);
+      var rect = el.getBoundingClientRect();
+      sendMessage({
+        type: 'element-selected',
+        selector: selector,
+        pagePath: window.location.pathname,
+        tagName: el.tagName.toLowerCase(),
+        text: (el.textContent || '').trim().substring(0, 50),
+        rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
+      });
+    }
+  }
+
+  function navigateToPage(targetPath) {
+    var currentPath = window.location.pathname;
+    if (!targetPath || targetPath === currentPath) return false;
+    window.location.href = targetPath;
+    return true;
+  }
+
+  function handleMessage(e) {
+    if (!e.data || e.data.source !== 'tourforge-builder') return;
+    if (!builderOrigin) builderOrigin = e.origin;
+    var msg = e.data;
+
+    if (msg.type === 'set-mode') {
+      mode = msg.mode;
+      if (msg.colors) currentColors = msg.colors;
+      if (msg.restartConfig) {
+        previewRestartConfig = {
+          enabled: !!msg.restartConfig.enabled,
+          position: msg.restartConfig.position || 'bottom-right'
+        };
+      }
+      if (mode) removeRestartButton();
+      if (mode === 'select') {
+        document.body.style.cursor = 'crosshair';
+        removeTooltip();
+        document.addEventListener('mousemove', onMouseMove, true);
+        document.addEventListener('click', onClick, true);
+      } else {
+        document.body.style.cursor = '';
+        removeTooltip();
+        document.removeEventListener('mousemove', onMouseMove, true);
+        document.removeEventListener('click', onClick, true);
+      }
+      if (mode === 'preview' && msg.steps && msg.steps.length > 0) {
+        currentPreviewData = msg.steps;
+        currentPreviewStep = msg.currentStep || 0;
+        var step = currentPreviewData[currentPreviewStep];
+        var stepPath = step.pagePath || step.page_path || '';
+        if (stepPath && stepPath !== window.location.pathname) {
+          sessionStorage.setItem('tourforge-preview', JSON.stringify({
+            steps: currentPreviewData,
+            currentStep: currentPreviewStep,
+            restartConfig: previewRestartConfig,
+            colors: currentColors
+          }));
+          navigateToPage(stepPath);
+        } else {
+          showTooltip(step, currentPreviewStep, currentPreviewData.length);
+        }
+      }
+    }
+
+    if (msg.type === 'preview-show-step') {
+      if (currentPreviewData) {
+        currentPreviewStep = msg.step;
+        var previewStep = currentPreviewData[currentPreviewStep];
+        var previewStepPath = previewStep.pagePath || previewStep.page_path || '';
+        if (previewStepPath && previewStepPath !== window.location.pathname) {
+          sessionStorage.setItem('tourforge-preview', JSON.stringify({
+            steps: currentPreviewData,
+            currentStep: currentPreviewStep,
+            restartConfig: previewRestartConfig,
+            colors: currentColors
+          }));
+          navigateToPage(previewStepPath);
+        } else {
+          showTooltip(previewStep, currentPreviewStep, currentPreviewData.length);
+        }
+      }
+    }
+
+    if (msg.type === 'preview-complete') {
+      if (msg.restartConfig) {
+        previewRestartConfig = {
+          enabled: !!msg.restartConfig.enabled,
+          position: msg.restartConfig.position || 'bottom-right'
+        };
+      }
+      removeTooltip();
+      showRestartButton();
+    }
+
+    if (msg.type === 'ping') {
+      sendMessage({ type: 'pong', version: HELPER_VERSION, capabilities: HELPER_CAPABILITIES.slice(), pagePath: window.location.pathname });
+    }
+
+    if (msg.type === 'get-page-path') {
+      sendMessage({ type: 'page-path', pagePath: window.location.pathname });
+    }
+  }
+
+  function resumePreview() {
+    var stored = sessionStorage.getItem('tourforge-preview');
+    if (!stored) return;
+    sessionStorage.removeItem('tourforge-preview');
+    try {
+      var data = JSON.parse(stored);
+      if (data.restartConfig) {
+        previewRestartConfig = {
+          enabled: !!data.restartConfig.enabled,
+          position: data.restartConfig.position || 'bottom-right'
+        };
+      }
+      if (data.colors) {
+        currentColors = data.colors;
+      }
+      if (data.steps && typeof data.currentStep === 'number') {
+        currentPreviewData = data.steps;
+        currentPreviewStep = data.currentStep;
+        mode = 'preview';
+        setTimeout(function() {
+          showTooltip(currentPreviewData[currentPreviewStep], currentPreviewStep, currentPreviewData.length);
+        }, 500);
+      }
+    } catch(e) {}
+  }
+
+  addStyles();
+  window.addEventListener('message', handleMessage);
+  if (window.parent !== window) {
+    window.parent.postMessage(getHandshakePayload('ready'), '*');
+  }
+  resumePreview();
+})();
+  </script>
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg fixed-top bt-nav">
     <div class="container">
