@@ -49,17 +49,19 @@
 <!-- BeeTour Builder Helper -->
 <!-- <script src="https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/serve-builder-helper" async></script> -->
 
-  <script>console.log("[TEST] Antes BeeTour", new Date().toISOString());</script>
-  <script src="https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/serve-tour-runtime" data-tour-id="f83fe935-23a2-4d97-8e7c-4f95b0d1dd90" data-api="https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/get-tour?id=f83fe935-23a2-4d97-8e7c-4f95b0d1dd90" defer></script>
-  <script>
+<script>console.log("[TEST] antes BeeTour");</script>
+
+<script src="https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/serve-tour-runtime"
+  data-site="056af92b-b6c4-455d-8cfe-c4fa9df9f9f1"
+  data-api="https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/get-site-tours"
+  defer></script>
+
+<script>
   setTimeout(function(){
     console.log("[TEST] window.__beetour =", window.__beetour);
-    console.log("[TEST] script tag =", document.querySelector('script[src*="serve-tour-runtime"]'));
-    fetch("https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/get-site-tours?site=SEU_SITE_ID")
-      .then(r => r.json())
-      .then(d => console.log("[TEST] tours retornados:", d))
-      .catch(e => console.error("[TEST] erro fetch:", e));
-  }, 2000);
+    fetch("https://fomowosdjdbmmvomvbaq.supabase.co/functions/v1/get-site-tours?site=056af92b-b6c4-455d-8cfe-c4fa9df9f9f1")
+      .then(r => r.json()).then(d => console.log("[TEST] tours:", d));
+  }, 3000);
 </script>
 
 
