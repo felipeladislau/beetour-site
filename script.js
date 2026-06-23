@@ -1,50 +1,134 @@
-// BeeTour — interações leves
-(function(){
+(function () {
   'use strict';
 
-  // Ano dinâmico no rodapé
-  var y = document.getElementById('bt-year');
-  if (y) y.textContent = new Date().getFullYear();
+  var header = document.querySelector('[data-header]');
+  var menuButton = document.querySelector('[data-menu-toggle]');
+  var menu = document.querySelector('[data-menu]');
 
-  // Sombra na navbar ao rolar
-  var nav = document.querySelector('.bt-nav');
-  function onScroll(){
-    if (!nav) return;
-    if (window.scrollY > 8) nav.classList.add('shadow-sm');
-    else nav.classList.remove('shadow-sm');
+  function syncHeader() {
+    if (header) header.classList.toggle('scrolled', window.scrollY > 12);
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
 
-  // Fecha o menu mobile ao clicar em um link
-  document.querySelectorAll('#navMain .nav-link, #navMain a.btn').forEach(function(a){
-    a.addEventListener('click', function(){
-      var col = document.getElementById('navMain');
-      if (col && col.classList.contains('show')) {
-        var bsCollapse = bootstrap.Collapse.getInstance(col) || new bootstrap.Collapse(col, { toggle: false });
-        bsCollapse.hide();
-      }
+  syncHeader();
+  window.addEventListener('scroll', syncHeader, { passive: true });
+
+  if (menuButton && menu) {
+    menuButton.addEventListener('click', function () {
+      var open = menu.classList.toggle('open');
+      menuButton.setAttribute('aria-expanded', String(open));
+    });
+
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.classList.remove('open');
+        menuButton.setAttribute('aria-expanded', 'false');
+        closeResourceMenu();
+      });
+    });
+  }
+
+  var resourceMenu = document.querySelector('[data-resource-menu]');
+  var resourceToggle = document.querySelector('[data-resource-toggle]');
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var resourceCloseTimer = null;
+
+  function clearResourceCloseTimer() {
+    if (resourceCloseTimer) {
+      clearTimeout(resourceCloseTimer);
+      resourceCloseTimer = null;
+    }
+  }
+
+  function openResourceMenu() {
+    if (!resourceMenu) return;
+    clearResourceCloseTimer();
+    resourceMenu.classList.add('is-open');
+    if (resourceToggle) resourceToggle.setAttribute('aria-expanded', 'true');
+  }
+
+  function scheduleResourceMenuClose() {
+    if (!resourceMenu) return;
+    clearResourceCloseTimer();
+    resourceCloseTimer = setTimeout(function () {
+      closeResourceMenu();
+    }, 900);
+  }
+
+  function closeResourceMenu() {
+    if (!resourceMenu) return;
+    clearResourceCloseTimer();
+    resourceMenu.classList.remove('is-open');
+    if (resourceToggle) resourceToggle.setAttribute('aria-expanded', 'false');
+  }
+
+  if (resourceMenu && resourceToggle) {
+    resourceMenu.addEventListener('mouseenter', function () {
+      if (!canHover.matches) return;
+      openResourceMenu();
+    });
+
+    resourceToggle.addEventListener('click', function (event) {
+      event.preventDefault();
+      var open = resourceMenu.classList.toggle('is-open');
+      clearResourceCloseTimer();
+      resourceToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    resourceMenu.addEventListener('mouseleave', function () {
+      if (canHover.matches) scheduleResourceMenuClose();
+    });
+  }
+
+  function selectTab(tabs, selected) {
+    var buttons = tabs.querySelectorAll('[data-tab]');
+    var panels = tabs.querySelectorAll('[data-panel]');
+
+    buttons.forEach(function (item) {
+      var active = item.getAttribute('data-tab') === selected;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-selected', String(active));
+    });
+
+    panels.forEach(function (panel) {
+      var active = panel.getAttribute('data-panel') === selected;
+      panel.classList.toggle('active', active);
+      panel.hidden = !active;
+    });
+  }
+
+  document.querySelectorAll('[data-tabs]').forEach(function (tabs) {
+    var buttons = tabs.querySelectorAll('[data-tab]');
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        selectTab(tabs, button.getAttribute('data-tab'));
+      });
     });
   });
 
-  // Reveal on scroll (suave)
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if (e.isIntersecting){
-          e.target.style.opacity = 1;
-          e.target.style.transform = 'translateY(0)';
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
+  document.querySelectorAll('[data-open-tab]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var tabs = document.querySelector('[data-tabs]');
+      if (tabs) selectTab(tabs, link.getAttribute('data-open-tab'));
+      closeResourceMenu();
+    });
+  });
 
-    document.querySelectorAll('.bt-stat-card, .bt-feature-card, .bt-result-card, .bt-step-card, .bt-plan, .bt-mini-card')
-      .forEach(function(el){
-        el.style.opacity = 0;
-        el.style.transform = 'translateY(16px)';
-        el.style.transition = 'opacity .5s ease, transform .5s ease';
-        io.observe(el);
+  var copyButton = document.querySelector('[data-copy]');
+  if (copyButton) {
+    copyButton.addEventListener('click', function () {
+      var code = copyButton.parentElement.querySelector('code');
+      if (!code) return;
+
+      navigator.clipboard.writeText(code.textContent.trim()).then(function () {
+        var original = copyButton.textContent;
+        copyButton.textContent = 'Copiado!';
+        setTimeout(function () { copyButton.textContent = original; }, 1600);
       });
+    });
   }
+
+  document.querySelectorAll('[data-year]').forEach(function (year) {
+    year.textContent = new Date().getFullYear();
+  });
 })();

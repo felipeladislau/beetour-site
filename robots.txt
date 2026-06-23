@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://beetour.com.br/sitemap.xml
